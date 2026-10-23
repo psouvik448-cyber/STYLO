@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -30,7 +30,7 @@
   <div class="headrow">
    <a class="brand" href="#home" aria-label="STYLO হোম">STYLO<small>KANDI · MURSHIDABAD</small></a>
    <form class="search" id="searchForm" role="search"><input id="searchInput" type="search" placeholder="জামা, শার্ট, জিন্স, জুতো খুঁজুন..." aria-label="পণ্য খুঁজুন"><button type="submit">খুঁজুন ↗</button></form>
-   <div class="headlinks"><a href="#store">দোকানের ঠিকানা</a><a class="call" href="tel:6295582157">ফোন করুন ↗</a></div>
+   <div class="headlinks"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="border:1px solid #ddd;padding:8px;border-radius:4px;background:#fff;font-size:11px"><option value="en" selected>English</option><option value="bn">বাংলা</option></select><a href="#store">Store Location</a><a class="call" href="tel:6295582157">Call Now ↗</a></div>
    <button class="mobilemenu" id="menuBtn" aria-label="মেনু খুলুন" aria-expanded="false">☰</button>
   </div>
   <nav class="nav" id="nav"><div class="navrow"><a href="#home">হোম</a><a href="#categories">সব বিভাগ</a><a href="#products">সব পণ্য</a><a href="#products" data-cat-link="shirts">শার্ট</a><a href="#products" data-cat-link="tshirts">টি-শার্ট</a><a href="#products" data-cat-link="pants">জিন্স ও প্যান্ট</a><a href="#products" data-cat-link="shoes">জুতো</a><a href="#products" data-cat-link="accessories">অ্যাক্সেসরিজ</a><a href="#store">যোগাযোগ</a></div></nav>
@@ -80,9 +80,31 @@ const products=[
 {id:9,cat:'accessories',category:'অ্যাক্সেসরিজ',name:'ক্যাপ ও ফ্যাশন অ্যাক্সেসরিজ',en:'Caps & Accessories',image:'https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=800&q=85',tag:'FINISHING TOUCH',sizes:'রং ও স্টক জানতে যোগাযোগ করুন'},
 {id:10,cat:'accessories',category:'অ্যাক্সেসরিজ',name:'দৈনন্দিন ফ্যাশন অ্যাক্সেসরিজ',en:'Fashion Accessories',image:'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=800&q=85',tag:'STYLE PICKS',sizes:'পণ্যের ভ্যারিয়েন্ট জানতে যোগাযোগ করুন'}
 ];
-let activeFilter='all',searchTerm='';
+let activeFilter='all',searchTerm='',currentLanguage='en';
 const grid=document.getElementById('productGrid'),resultCount=document.getElementById('resultCount');
 const waBase='https://wa.me/916295582157?text=';
+
+const englishText = {
+'দাম কম, মান সেরা':'Great Value, Great Quality','পছন্দের পোশাক ও জুতো এক ঠিকানায়':'Your destination for clothing and shoes','খুঁজুন ↗':'Search ↗','দোকানের ঠিকানা':'Store Location','ফোন করুন ↗':'Call Now ↗','হোম':'Home','সব বিভাগ':'Categories','সব পণ্য':'All Products','শার্ট':'Shirts','টি-শার্ট':'T-shirts','জিন্স ও প্যান্ট':'Jeans & Trousers','জুতো':'Shoes','অ্যাক্সেসরিজ':'Accessories','যোগাযোগ':'Contact','নিজের স্টাইল।':'YOUR STYLE.','নিজের বাজেট।':'YOUR BUDGET.','শার্ট, টি-শার্ট, জিন্স, প্যান্ট ও জুতো—পছন্দের কালেকশন খুঁজে নিন STYLO-তে।':'Explore shirts, T-shirts, jeans, trousers and shoes at STYLO.','পণ্য দেখুন ↓':'Explore Products ↓','WhatsApp-এ যোগাযোগ':'Contact on WhatsApp','পছন্দের কালেকশন':'Curated Collection','পোশাক, জুতো ও অ্যাক্সেসরিজ':'Clothing, shoes & accessories','বাজেট অনুযায়ী বাছুন':'Shop Your Budget','দাম জানতে সরাসরি যোগাযোগ':'Contact us for prices','স্থানীয় দোকান':'Your Local Store','কোন বিভাগে কী খুঁজছেন?':'What are you looking for?','বিভাগ বেছে নিন, পণ্য দেখুন এবং দাম ও সাইজ সম্পর্কে সরাসরি জেনে নিন।':'Choose a category and ask us directly about prices and sizes.','পছন্দের পণ্য বেছে নিন':'Explore the Collection','বিভাগ বেছে নিন, পণ্যের বিস্তারিত ও কালেকশন দেখুন।':'Choose a category to browse products and details.','সাজান':'Sort by','প্রস্তাবিত':'Featured','নাম অনুযায়ী':'Name','নিজের পছন্দে বেছে নিন':'Find Your Style','দাম ও সাইজ আগে জেনে নিন':'Check Price & Size First','কান্দিতে আপনার পরিচিত দোকান':'Your Local Store in Kandi','দোকানে আসুন, পছন্দ করে নিন':'Visit STYLO','ঠিকানা':'Address','ফোন':'Phone','সময়':'Hours','স্লোগান':'Tagline','© STYLO. সর্বস্বত্ব সংরক্ষিত।':'© STYLO. All rights reserved.','দাম জানতে যোগাযোগ করুন':'Contact for price','বিস্তারিত':'View Details','দাম জিজ্ঞাসা ↗':'Ask Price ↗','দাম: পরে যোগ করা হবে':'Price: To be added','সাইজ ও রং':'Sizes & Colours','রেগুলার ফিট':'Regular fit','ওভারসাইজড ফিট':'Oversized fit','হাফ স্লিভ':'Half sleeve','ফুল স্লিভ':'Full sleeve','রাউন্ড নেক':'Round neck','পোলো কলার':'Polo collar','পরে যোগ করা হবে':'To be added'
+};
+function setLanguage(lang){
+ currentLanguage=lang;
+ document.documentElement.lang=lang;
+ document.body.style.fontFamily=lang==='en'?'var(--en)':'var(--bn)';
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ while(walker.nextNode()){
+  const node=walker.currentNode;
+  if(!node.__baseText) node.__baseText=node.nodeValue;
+  let val=node.__baseText;
+  if(lang==='en') for(const [bn,en] of Object.entries(englishText)) val=val.split(bn).join(en);
+  node.nodeValue=val;
+ }
+ const search=document.getElementById('searchInput');
+ search.placeholder=lang==='en'?'Search shirts, T-shirts, jeans, shoes...':'জামা, শার্ট, জিন্স, জুতো খুঁজুন...';
+ document.querySelector('.search button').textContent=lang==='en'?'Search ↗':'খুঁজুন ↗';
+ renderProducts();
+}
+
 function enquire(p){return waBase+encodeURIComponent('নমস্কার STYLO, আমি '+p.name+' ('+p.en+') সম্পর্কে জানতে চাই। অনুগ্রহ করে বর্তমান দাম, উপলভ্য রং ও সাইজ জানাবেন।');}
 function renderProducts(){let list=products.filter(p=>(activeFilter==='all'||p.cat===activeFilter)&&(p.name+' '+p.en+' '+p.category).toLowerCase().includes(searchTerm));if(document.getElementById('sortSelect').value==='name')list.sort((a,b)=>a.name.localeCompare(b.name,'bn'));const titles={all:'পছন্দের পণ্য বেছে নিন',shirts:'শার্ট কালেকশন',tshirts:'টি-শার্ট কালেকশন',pants:'জিন্স ও প্যান্ট কালেকশন',shoes:'জুতো কালেকশন',accessories:'অ্যাক্সেসরিজ কালেকশন'};const descriptions={all:'বিভাগ বেছে নিন, পণ্যের বিস্তারিত ও কালেকশন দেখুন।',shirts:'শার্টের ডিজাইন, দাম ও সাইজের তথ্য দেখুন।',tshirts:'বেসিক, প্রিন্টেড, পোলো, ওভারসাইজড, ফুল-স্লিভ ও স্পোর্টস—টি-শার্টের ধরন বেছে নিয়ে বিস্তারিত দেখুন। আসল পণ্যের দাম ও স্টক পরে আপডেট করা হবে।',pants:'জিন্স ও প্যান্টের কালেকশন দেখুন।',shoes:'জুতো ও স্নিকার্সের কালেকশন দেখুন।',accessories:'ফ্যাশন অ্যাক্সেসরিজের কালেকশন দেখুন।'};document.getElementById('catalogTitle').textContent=titles[activeFilter]||titles.all;document.getElementById('catalogDescription').textContent=descriptions[activeFilter]||descriptions.all;resultCount.textContent='মোট '+list.length+'টি পণ্য';grid.innerHTML=list.length?list.map(p=>'<article class="product"><div class="pimage"><img loading="lazy" src="'+p.image+'" alt="'+p.name+'"><span class="tag">'+p.tag+'</span></div><div class="pbody"><div class="pcat">'+p.category+' · '+p.en+'</div><div class="pname">'+p.name+'</div><div class="price">দাম জানতে যোগাযোগ করুন</div><div class="sizehint">সাইজ: '+p.sizes+'</div><div class="pactions"><button type="button" data-detail="'+p.id+'">বিস্তারিত</button><button type="button" class="details" data-enquire="'+p.id+'">দাম জিজ্ঞাসা ↗</button></div></div></article>').join(''):'<div class="empty">এই নামে কোনও পণ্য পাওয়া যায়নি। অন্য নাম দিয়ে খুঁজুন অথবা WhatsApp-এ যোগাযোগ করুন।</div>';grid.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>showDetails(Number(b.dataset.detail))));grid.querySelectorAll('[data-enquire]').forEach(b=>b.addEventListener('click',()=>window.open(enquire(products.find(p=>p.id===Number(b.dataset.enquire))),'_blank','noopener')));}
 function setFilter(f){activeFilter=f;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));renderProducts();}
@@ -97,7 +119,7 @@ document.getElementById('modalClose').addEventListener('click',closeModal);
 document.getElementById('modalBack').addEventListener('click',e=>{if(e.target.id==='modalBack')closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 const menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('nav');menuBtn.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuBtn.setAttribute('aria-expanded',String(open));menuBtn.textContent=open?'×':'☰';});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menuBtn.setAttribute('aria-expanded','false');menuBtn.textContent='☰';}));
-document.getElementById('year').textContent=new Date().getFullYear();renderProducts();
+document.getElementById('year').textContent=new Date().getFullYear();document.getElementById('languageSelect').addEventListener('change',e=>setLanguage(e.target.value));setLanguage('en');
 </script>
 </body>
 </html>
